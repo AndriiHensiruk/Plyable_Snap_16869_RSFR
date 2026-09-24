@@ -1390,34 +1390,40 @@ function playSound(name, volume = 1) {
 
 
 function unlockAudio() {
-
     if (audioUnlocked) return;
-
     audioUnlocked = true;
 
-    try {
+    // Мобільні браузери вимагають розблокування через контекст користувача
+    Object.values(sounds).forEach(audio => {
+        try {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(() => {});
+        } catch (e) {}
+    });
 
-        const silent =
-            new Audio();
-
-        silent.muted = true;
-
-        const promise =
-            silent.play();
-
-        if (promise) {
-
-            promise
-                .then(() => silent.pause())
-                .catch(() => {});
-
-        }
-
-    } catch (e) {}
-
-    playSound("sauna", .22);
+    if (soundEnabled) {
+        playSound("sauna", 0.22);
+    }
 }
 
+function handleUserGesture() {
+    unlockAudio();
+
+    if (soundEnabled && !audioUnlocked) {
+        unlockAudio();
+    }
+
+    if (soundEnabled) {
+        try {
+            sounds.sauna.currentTime = 0;
+            sounds.sauna.volume = 0.22;
+            sounds.sauna.loop = true;
+            sounds.sauna.play().catch(() => {});
+        } catch (e) {}
+    }
+}
 
 
 function hideAllScenes() {
@@ -1752,10 +1758,6 @@ function activateSteam() {
             "shake"
         );
 
-        /*
-           Steam level
-        */
-
         setSteamLevel(70);
 
         steamLayer.classList.add(
@@ -1912,7 +1914,7 @@ girlAHit.addEventListener(
     event => {
 
         event.preventDefault();
-
+        handleUserGesture();
         selectGirl("a");
 
     }
@@ -1923,7 +1925,7 @@ girlBHit.addEventListener(
     event => {
 
         event.preventDefault();
-
+        handleUserGesture();
         selectGirl("b");
 
     }
@@ -1934,7 +1936,7 @@ bucketA.addEventListener(
     event => {
 
         event.preventDefault();
-
+        handleUserGesture();
         activateSteam();
 
     }
@@ -1945,7 +1947,7 @@ bucketB.addEventListener(
     event => {
 
         event.preventDefault();
-
+        handleUserGesture();
         activateSteam();
 
     }
@@ -2009,17 +2011,17 @@ soundButton.addEventListener(
     }
 );
 
-document.addEventListener(
-    "pointerdown",
-    () => {
-
-        unlockAudio();
-
-    },
-    {
-        once: true
-    }
-);
+["pointerdown", "touchstart", "touchend", "click"].forEach(eventName => {
+    document.addEventListener(
+        eventName,
+        () => {
+            handleUserGesture();
+        },
+        {
+            passive: true
+        }
+    );
+});
 
 [
     "assets/scene-1.webp",
