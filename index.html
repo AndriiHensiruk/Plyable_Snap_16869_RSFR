@@ -1,0 +1,2084 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no,
+               viewport-fit=cover">
+
+<meta name="ad.size" content="width=1080,height=1920">
+
+<title>Plyable_Snap_16869_RSFR</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #111;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game {
+    position: relative;
+    width: min(100vw, 56.25vh);
+    height: min(100vh, 177.7778vw);
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    background: #000;
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
+    transform-origin: center center;
+}
+
+
+.scene {
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+    pointer-events: none;
+
+    overflow: hidden;
+
+    transition:
+        opacity .45s ease,
+        transform .55s cubic-bezier(.2,.8,.2,1);
+}
+
+.scene.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.scene-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: 50% 50% !important;
+    background-position: center center;
+    display: block;
+}
+
+#finalImage,
+.selected-scene,
+#steamLayer img.steam-img {
+    object-position: 50% 50% !important;
+    background-position: center center;
+}
+
+
+#choiceScene .scene-image {
+    transform: scale(1.001);
+    transition:
+        transform 5s cubic-bezier(.2,.7,.2,1);
+}
+
+#choiceScene.active .scene-image {
+    transform: scale(1.035);
+}
+
+
+
+.choice-title {
+    position: absolute;
+
+    left: 50%;
+    top: 9%;
+
+    transform:
+        translateX(-50%)
+        translateY(-15px)
+        scale(.88);
+
+    z-index: 10;
+
+    width: 85%;
+    max-width: 900px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        transform .7s cubic-bezier(.2,1.35,.35,1),
+        opacity .4s ease;
+}
+
+.choice-title img {
+    width: 100%;
+    height: auto;
+    display: block;
+
+    filter:
+        drop-shadow(0 5px 10px rgba(0,0,0,.25));
+}
+
+#choiceScene.active .choice-title {
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+
+    transition-delay: .15s;
+}
+
+
+
+.girl-hit {
+    position: absolute;
+
+    z-index: 15;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        filter .2s ease;
+}
+
+#girlAHit {
+    left: 5%;
+    top: 23%;
+    width: 48%;
+    height: 59%;
+}
+
+#girlBHit {
+    left: 48%;
+    top: 22%;
+    width: 47%;
+    height: 62%;
+}
+
+.girl-hit:active {
+    transform: scale(.97);
+}
+
+
+.girl-hit.selected {
+    animation: selectedGirl .45s ease forwards;
+}
+
+@keyframes selectedGirl {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    45% {
+        transform: scale(1.035);
+        filter: brightness(1.18);
+    }
+
+    100% {
+        transform: scale(1.015);
+        filter: brightness(1.08);
+    }
+}
+
+
+.tap {
+    position: absolute;
+
+    width: 19%;
+    aspect-ratio: 1;
+
+    z-index: 30;
+
+    pointer-events: none;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+.tap img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter:
+        drop-shadow(0 5px 12px rgba(0,0,0,.3));
+
+    animation:
+        tapPulse 1.15s ease-in-out infinite;
+}
+
+
+
+@keyframes tapPulse {
+
+    0%,
+    100% {
+        transform: scale(.88);
+        opacity: .75;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
+.tap::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 115%;
+    height: 115%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.65);
+
+    border-radius: 50%;
+
+    border: 2px solid rgba(255,255,255,.75);
+
+    opacity: 0;
+
+    animation:
+        tapRing 1.4s ease-out infinite;
+
+    pointer-events: none;
+}
+
+@keyframes tapRing {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(.65);
+
+        opacity: .65;
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.25);
+
+        opacity: 0;
+    }
+}
+
+.tap.hide {
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.45);
+}
+
+.tap.hide::after {
+    animation: none;
+}
+
+#tapA {
+    left: 35%;
+    top: 51%;
+}
+
+#tapB {
+    left: 69%;
+    top: 56%;
+}
+
+
+
+.selected-scene {
+    transform: scale(1.045);
+
+    transition:
+        transform 1.2s cubic-bezier(.2,.7,.2,1);
+}
+
+.scene.active .selected-scene {
+    transform: scale(1);
+}
+
+
+.bubble-img {
+    position: absolute;
+
+    z-index: 20;
+
+    top: 10%;
+    left: 50%;
+
+    transform:
+        translateX(-50%)
+        translateY(-10px)
+        scale(.72);
+
+    opacity: 0;
+
+    width: 72%;
+    max-width: 780px;
+
+    pointer-events: none;
+
+    transition:
+        opacity .4s ease,
+        transform .65s cubic-bezier(.2,1.35,.35,1);
+}
+
+.bubble-img img {
+    width: 100%;
+    height: auto;
+
+    display: block;
+
+    filter:
+        drop-shadow(0 5px 10px rgba(0,0,0,.25));
+}
+
+.scene.active .bubble-img {
+    opacity: 1;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scale(1);
+
+    transition-delay: .25s;
+}
+
+
+.bucket-hit {
+    position: absolute;
+
+    z-index: 25;
+
+    left: 16%;
+    top: 67%;
+
+    width: 44%;
+    height: 25%;
+
+    cursor: pointer;
+}
+
+.bucket-hit::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 80%;
+    height: 80%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.8);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.14),
+            transparent 65%
+        );
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+.bucket-hit:active::after {
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+}
+
+.bucket-tap {
+    left: 20%;
+    top: 78%;
+
+    width: 20%;
+}
+
+
+#steamLayer {
+    position: absolute;
+
+    inset: -12%;
+
+    z-index: 40;
+
+    opacity: 0;
+
+    pointer-events: none;
+    transform-origin: center center;
+    transition:
+        opacity .65s ease,
+        transform 1.4s cubic-bezier(.2,.8,.2,1);
+}
+
+#steamLayer img.steam-img {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+/* Steam levels */
+
+#steamLayer.level-20 {
+    opacity: .20;
+}
+
+#steamLayer.level-70 {
+    opacity: .72;
+}
+
+#steamLayer.level-100 {
+    opacity: 1;
+}
+
+#steamLayer.rising {
+    animation:
+        steamRise 1.55s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+@keyframes steamRise {
+
+    0% {
+        transform:
+            translateY(18%)
+            scale(.94);
+    }
+
+    45% {
+        transform:
+            translateY(5%)
+            scale(1.01);
+    }
+
+    100% {
+        transform:
+            translateY(-4%)
+            scale(1.06);
+    }
+}
+
+
+
+#steamBurst {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 45;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 70%,
+            rgba(255,255,255,.75) 0%,
+            rgba(255,255,255,.35) 15%,
+            transparent 55%
+        );
+}
+
+#steamBurst.play {
+    animation:
+        steamBurst .65s ease-out;
+}
+
+@keyframes steamBurst {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(.65);
+    }
+
+    20% {
+        opacity: .8;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            scale(1.35);
+    }
+}
+
+
+#particles {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 41;
+
+    pointer-events: none;
+
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.7) 0%,
+            rgba(255,255,255,.18) 42%,
+            transparent 72%
+        );
+
+    opacity: 0;
+
+    will-change:
+        transform,
+        opacity;
+}
+
+.particle.animate {
+    animation:
+        particleFloat var(--dur)
+        ease-in-out infinite;
+
+    animation-delay:
+        var(--delay);
+}
+
+@keyframes particleFloat {
+
+    0% {
+        transform:
+            translate(0, 35px)
+            scale(.55);
+
+        opacity: 0;
+    }
+
+    15% {
+        opacity: var(--op);
+    }
+
+    50% {
+        transform:
+            translate(var(--x), -45px)
+            scale(1);
+
+        opacity: var(--op);
+    }
+
+    85% {
+        opacity: var(--op);
+    }
+
+    100% {
+        transform:
+            translate(
+                calc(var(--x) * 1.4),
+                -100px
+            )
+            scale(1.15);
+
+        opacity: 0;
+    }
+}
+
+
+.steam-particle {
+    position: absolute;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.8);
+
+    pointer-events: none;
+
+    animation:
+        steamParticle .8s ease-out forwards;
+}
+
+@keyframes steamParticle {
+
+    0% {
+        transform:
+            translate(0,0)
+            scale(.4);
+
+        opacity: .9;
+    }
+
+    100% {
+        transform:
+            translate(
+                var(--px),
+                var(--py)
+            )
+            scale(1.4);
+
+        opacity: 0;
+    }
+}
+
+
+#finalScene {
+    z-index: 30;
+}
+
+
+#finalImage {
+    transform: scale(1.04);
+
+    transition:
+        transform 2s cubic-bezier(.2,.7,.2,1);
+}
+
+#finalScene.active #finalImage {
+    transform: scale(1);
+}
+
+
+
+#finalUI {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 70;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transition:
+        opacity .3s ease;
+}
+
+#finalUI.visible {
+    opacity: 1;
+}
+
+
+.final-title {
+    position: absolute;
+
+    z-index: 75;
+
+    top: 7%;
+    left: 50%;
+
+    transform:
+        translateX(-50%)
+        translateY(-20px)
+        scale(.82);
+
+    width: 84%;
+    max-width: 880px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .4s ease,
+        transform .65s cubic-bezier(.2,1.35,.35,1);
+}
+
+.final-title img {
+    width: 100%;
+    height: auto;
+
+    display: block;
+
+    filter:
+        drop-shadow(0 7px 14px rgba(0,0,0,.35));
+}
+
+#finalUI.visible .final-title {
+    opacity: 1;
+
+    transform:
+        translateX(-50%)
+        translateY(0)
+        scale(1);
+
+    transition-delay: .1s;
+}
+
+
+.cta-button {
+    position: absolute;
+
+    z-index: 80;
+
+    left: 50%;
+    top: 52%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.65);
+
+    width: 72%;
+    max-width: 680px;
+
+    border: 0;
+
+    background: transparent;
+
+    padding: 0;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .35s ease,
+        transform .6s cubic-bezier(.2,1.35,.35,1);
+}
+
+.cta-button img {
+    width: 100%;
+    height: auto;
+
+    display: block;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 8px 12px rgba(0,0,0,.3));
+}
+
+/* CTA visible */
+
+#finalUI.show-cta .cta-button {
+    opacity: 1;
+
+    pointer-events: auto;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+
+    animation:
+        ctaPulse 1.25s ease-in-out infinite;
+}
+
+@keyframes ctaPulse {
+
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
+        filter:
+            brightness(1)
+            drop-shadow(0 8px 12px rgba(0,0,0,.25));
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.045);
+
+        filter:
+            brightness(1.08)
+            drop-shadow(0 0 18px rgba(255,255,255,.7))
+            drop-shadow(0 8px 12px rgba(0,0,0,.3));
+    }
+}
+
+/* CTA press */
+
+.cta-button:active {
+    transform:
+        translate(-50%, -50%)
+        scale(.94) !important;
+}
+
+
+#ctaGlow {
+    position: absolute;
+
+    left: 50%;
+    top: 52%;
+
+    width: 75%;
+    height: 18%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.8);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(255,255,255,.38),
+            transparent 68%
+        );
+
+    filter: blur(12px);
+
+    opacity: 0;
+
+    z-index: 72;
+
+    pointer-events: none;
+}
+
+#finalUI.show-cta #ctaGlow {
+    animation:
+        ctaGlowPulse 1.25s ease-in-out infinite;
+}
+
+@keyframes ctaGlowPulse {
+
+    0%,
+    100% {
+        opacity: .25;
+        transform:
+            translate(-50%, -50%)
+            scale(.85);
+    }
+
+    50% {
+        opacity: .65;
+        transform:
+            translate(-50%, -50%)
+            scale(1.05);
+    }
+}
+
+
+
+.sound-button {
+    position: absolute;
+
+    z-index: 100;
+
+    top: 2.5%;
+    right: 3%;
+
+    width: 11%;
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255,255,255,.9);
+
+    background:
+        rgba(0,0,0,.32);
+
+    color: white;
+
+    font-size:
+        clamp(16px, 4vw, 35px);
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    backdrop-filter: blur(4px);
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.25);
+
+    transition:
+        transform .15s ease,
+        background .15s ease;
+}
+
+.sound-button:active {
+    transform: scale(.88);
+
+    background:
+        rgba(0,0,0,.55);
+}
+
+
+
+#flash {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 200;
+
+    background: white;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+#flash.play {
+    animation:
+        flash .32s ease-out;
+}
+
+@keyframes flash {
+
+    0% {
+        opacity: 0;
+    }
+
+    18% {
+        opacity: .85;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+
+#game.shake {
+    animation:
+        screenShake .35s ease;
+}
+
+@keyframes screenShake {
+
+    0%,
+    100% {
+        transform: translate(0,0);
+    }
+
+    20% {
+        transform: translate(-3px,2px);
+    }
+
+    40% {
+        transform: translate(4px,-2px);
+    }
+
+    60% {
+        transform: translate(-3px,-1px);
+    }
+
+    80% {
+        transform: translate(2px,2px);
+    }
+}
+
+
+img,
+button {
+    -webkit-user-drag: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+
+    <section id="choiceScene" class="scene active">
+
+        <img
+            class="scene-image"
+            src="assets/scene-1.webp"
+            alt=""
+        >
+
+        <div class="choice-title">
+            <img
+                src="assets/text-choice.webp"
+                alt=""
+            >
+        </div>
+
+        <div
+            id="girlAHit"
+            class="girl-hit"
+            data-girl="a">
+        </div>
+
+        <div
+            id="girlBHit"
+            class="girl-hit"
+            data-girl="b">
+        </div>
+
+        <div id="tapA" class="tap">
+            <img
+                src="assets/tap.webp"
+                alt=""
+            >
+        </div>
+
+        <div id="tapB" class="tap">
+            <img
+                src="assets/tap.webp"
+                alt=""
+            >
+        </div>
+
+    </section>
+
+
+
+
+    <section id="girlAScene" class="scene">
+
+        <img
+            class="scene-image selected-scene"
+            src="assets/scene-2-a.webp"
+            alt=""
+        >
+
+        <div class="bubble-img">
+            <img
+                src="assets/text-steam.webp"
+                alt=""
+            >
+        </div>
+
+        <div
+            id="bucketA"
+            class="bucket-hit"
+            data-girl="a">
+        </div>
+
+        <div class="tap bucket-tap">
+            <img
+                src="assets/tap.webp"
+                alt=""
+            >
+        </div>
+
+    </section>
+
+
+   
+    <section id="girlBScene" class="scene">
+
+        <img
+            class="scene-image selected-scene"
+            src="assets/scene-2-b.webp"
+            alt=""
+        >
+
+        <div class="bubble-img">
+            <img
+                src="assets/text-steam.webp"
+                alt=""
+            >
+        </div>
+
+        <div
+            id="bucketB"
+            class="bucket-hit"
+            data-girl="b">
+        </div>
+
+        <div class="tap bucket-tap">
+            <img
+                src="assets/tap.webp"
+                alt=""
+            >
+        </div>
+
+    </section>
+
+
+
+    <section id="finalScene" class="scene">
+
+        <img
+            id="finalImage"
+            class="scene-image"
+            src=""
+            alt=""
+        >
+
+    </section>
+
+    <div id="steamLayer">
+
+        <img
+            class="steam-img"
+            src="assets/steam-water.webp"
+            alt=""
+        >
+
+    </div>
+
+
+    <div id="steamBurst"></div>
+
+    <div id="particles"></div>
+
+
+    <div id="finalUI">
+
+        <div class="final-title">
+
+            <img
+                src="assets/text-final.webp"
+                alt=""
+            >
+
+        </div>
+
+        <div id="ctaGlow"></div>
+
+        <button
+            class="cta-button"
+            id="ctaButton"
+            type="button">
+
+            <img
+                src="assets/btn-cta.webp"
+                alt="Continue"
+            >
+
+        </button>
+
+    </div>
+
+
+    <div id="flash"></div>
+
+
+    <button
+        id="soundButton"
+        class="sound-button"
+        aria-label="Toggle sound">
+
+        🔊
+
+    </button>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   CONFIG
+============================================================ */
+
+const CTA_URL = "https://honeytoon.com/";
+
+const STEAM_TO_70_DURATION = 900;
+const STEAM_HOLD_BEFORE_FINAL = 700;
+
+const TRANSITION_DURATION = 350;
+
+const PARTICLE_COUNT = 28;
+
+
+/* ============================================================
+   ELEMENTS
+============================================================ */
+
+const game =
+    document.getElementById("game");
+
+const choiceScene =
+    document.getElementById("choiceScene");
+
+const girlAScene =
+    document.getElementById("girlAScene");
+
+const girlBScene =
+    document.getElementById("girlBScene");
+
+const finalScene =
+    document.getElementById("finalScene");
+
+const finalImage =
+    document.getElementById("finalImage");
+
+const finalUI =
+    document.getElementById("finalUI");
+
+const steamLayer =
+    document.getElementById("steamLayer");
+
+const steamBurst =
+    document.getElementById("steamBurst");
+
+const particlesEl =
+    document.getElementById("particles");
+
+const flash =
+    document.getElementById("flash");
+
+const tapA =
+    document.getElementById("tapA");
+
+const tapB =
+    document.getElementById("tapB");
+
+const soundButton =
+    document.getElementById("soundButton");
+
+const ctaButton =
+    document.getElementById("ctaButton");
+
+const girlAHit =
+    document.getElementById("girlAHit");
+
+const girlBHit =
+    document.getElementById("girlBHit");
+
+const bucketA =
+    document.getElementById("bucketA");
+
+const bucketB =
+    document.getElementById("bucketB");
+
+
+/* ============================================================
+   STATE
+============================================================ */
+
+let selectedGirl = null;
+
+let audioUnlocked = false;
+
+let soundEnabled = true;
+
+let steamPlaying = false;
+
+let steamSoundPlayed = false;
+
+let ctaOpened = false;
+
+
+/* ============================================================
+   AUDIO
+============================================================ */
+
+
+const sounds = {
+
+    sauna:
+        new Audio("assets/audio/sauna.mp3"),
+
+    select:
+        new Audio("assets/audio/select.mp3"),
+
+    steam:
+        new Audio("assets/audio/steam.mp3"),
+
+    reaction:
+        new Audio("assets/audio/reaction-a.mp3")
+};
+
+sounds.sauna.loop = true;
+
+Object.values(sounds).forEach(audio => {
+
+    audio.preload = "auto";
+
+});
+
+
+function playSound(name, volume = 1) {
+
+    if (!soundEnabled) return;
+
+    if (!sounds[name]) return;
+
+    const audio = sounds[name];
+
+    try {
+
+        audio.pause();
+
+        audio.currentTime = 0;
+
+        audio.volume = volume;
+
+        const promise = audio.play();
+
+        if (promise) {
+            promise.catch(() => {});
+        }
+
+    } catch (e) {}
+
+}
+
+
+function unlockAudio() {
+
+    if (audioUnlocked) return;
+
+    audioUnlocked = true;
+
+    try {
+
+        const silent =
+            new Audio();
+
+        silent.muted = true;
+
+        const promise =
+            silent.play();
+
+        if (promise) {
+
+            promise
+                .then(() => silent.pause())
+                .catch(() => {});
+
+        }
+
+    } catch (e) {}
+
+    playSound("sauna", .22);
+}
+
+
+
+function hideAllScenes() {
+
+    document
+        .querySelectorAll(".scene")
+        .forEach(scene => {
+
+            scene.classList.remove("active");
+
+        });
+
+}
+
+
+function showScene(scene) {
+
+    hideAllScenes();
+
+    scene.classList.add("active");
+
+}
+
+
+function flashScreen() {
+
+    flash.classList.remove("play");
+
+    void flash.offsetWidth;
+
+    flash.classList.add("play");
+
+}
+
+
+function setSteamLevel(level) {
+
+    steamLayer.classList.remove(
+        "level-20",
+        "level-70",
+        "level-100"
+    );
+
+    if (level) {
+
+        steamLayer.classList.add(
+            "level-" + level
+        );
+
+    }
+
+}
+
+function createParticles() {
+
+    particlesEl.innerHTML = "";
+
+    for (
+        let i = 0;
+        i < PARTICLE_COUNT;
+        i++
+    ) {
+
+        const p =
+            document.createElement("div");
+
+        p.className =
+            "particle";
+
+        const size =
+            40 + Math.random() * 90;
+
+        const left =
+            Math.random() * 100;
+
+        const top =
+            55 + Math.random() * 40;
+
+        const x =
+            (Math.random() - .5) * 60;
+
+        const dur =
+            3.5 + Math.random() * 4;
+
+        const delay =
+            Math.random() * 3;
+
+        const op =
+            .25 + Math.random() * .45;
+
+        p.style.width =
+            size + "px";
+
+        p.style.height =
+            size + "px";
+
+        p.style.left =
+            left + "%";
+
+        p.style.top =
+            top + "%";
+
+        p.style.setProperty(
+            "--x",
+            x + "px"
+        );
+
+        p.style.setProperty(
+            "--dur",
+            dur + "s"
+        );
+
+        p.style.setProperty(
+            "--delay",
+            delay + "s"
+        );
+
+        p.style.setProperty(
+            "--op",
+            op
+        );
+
+        particlesEl.appendChild(p);
+
+    }
+
+}
+
+
+function startParticles() {
+
+    particlesEl
+        .querySelectorAll(".particle")
+        .forEach(particle => {
+
+            particle.classList.add(
+                "animate"
+            );
+
+        });
+
+}
+
+
+
+function steamParticleBurst() {
+
+    const rect =
+        game.getBoundingClientRect();
+
+    const centerX =
+        rect.width * .38;
+
+    const centerY =
+        rect.height * .76;
+
+    for (
+        let i = 0;
+        i < 18;
+        i++
+    ) {
+
+        const particle =
+            document.createElement("div");
+
+        particle.className =
+            "steam-particle";
+
+        particle.style.left =
+            centerX + "px";
+
+        particle.style.top =
+            centerY + "px";
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+        const distance =
+            60 + Math.random() * 180;
+
+        const px =
+            Math.cos(angle) *
+            distance;
+
+        const py =
+            Math.sin(angle) *
+            distance - 100;
+
+        particle.style.setProperty(
+            "--px",
+            px + "px"
+        );
+
+        particle.style.setProperty(
+            "--py",
+            py + "px"
+        );
+
+        particle.style.width =
+            (7 + Math.random() * 12) + "px";
+
+        particle.style.height =
+            particle.style.width;
+
+        steamBurst.appendChild(
+            particle
+        );
+
+        setTimeout(() => {
+
+            particle.remove();
+
+        }, 900);
+
+    }
+
+}
+
+
+function selectGirl(girl) {
+
+    if (selectedGirl) return;
+
+    if (steamPlaying) return;
+
+    unlockAudio();
+
+    selectedGirl = girl;
+
+    const selectedHit =
+        girl === "a"
+            ? girlAHit
+            : girlBHit;
+
+    selectedHit.classList.add(
+        "selected"
+    );
+
+    tapA.classList.add("hide");
+    tapB.classList.add("hide");
+
+    playSound(
+        "select",
+        .85
+    );
+
+    flashScreen();
+
+    setTimeout(() => {
+
+        showScene(
+            girl === "a"
+                ? girlAScene
+                : girlBScene
+        );
+
+        setSteamLevel(20);
+
+        createParticles();
+
+        startParticles();
+
+    }, TRANSITION_DURATION);
+
+}
+
+function activateSteam() {
+
+    if (!selectedGirl) return;
+
+    if (steamPlaying) return;
+
+    steamPlaying = true;
+
+    unlockAudio();
+
+    const currentScene =
+        selectedGirl === "a"
+            ? girlAScene
+            : girlBScene;
+
+    const tap =
+        currentScene.querySelector(
+            ".bucket-tap"
+        );
+
+    if (tap) {
+
+        tap.classList.add(
+            "hide"
+        );
+
+    }
+
+    playSound(
+        "select",
+        .7
+    );
+
+ 
+    setTimeout(() => {
+
+        if (!steamSoundPlayed) {
+
+            playSound(
+                "steam",
+                1
+            );
+
+            steamSoundPlayed = true;
+
+        }
+
+      
+        steamBurst.classList.remove(
+            "play"
+        );
+
+        void steamBurst.offsetWidth;
+
+        steamBurst.classList.add(
+            "play"
+        );
+
+        steamParticleBurst();
+
+       
+
+        game.classList.add(
+            "shake"
+        );
+
+        /*
+           Steam level
+        */
+
+        setSteamLevel(70);
+
+        steamLayer.classList.add(
+            "rising"
+        );
+
+       
+        createParticles();
+
+        startParticles();
+
+       
+
+        setTimeout(() => {
+
+            game.classList.remove(
+                "shake"
+            );
+
+        }, 350);
+
+     
+
+        setTimeout(() => {
+
+            showFinalScene();
+
+        }, STEAM_TO_70_DURATION +
+           STEAM_HOLD_BEFORE_FINAL);
+
+    }, 120);
+
+}
+
+
+function showFinalScene() {
+
+    finalImage.src =
+        selectedGirl === "a"
+            ? "assets/scene-3-a.webp"
+            : "assets/scene-3-b.webp";
+
+
+    finalUI.classList.remove(
+        "visible"
+    );
+
+    finalUI.classList.remove(
+        "show-cta"
+    );
+
+
+
+    flashScreen();
+
+    showScene(finalScene);
+
+  
+
+    setSteamLevel(100);
+
+    steamLayer.classList.add(
+        "rising"
+    );
+
+    if (
+        particlesEl.children.length === 0
+    ) {
+
+        createParticles();
+
+    }
+
+    startParticles();
+
+
+    playSound(
+        "reaction",
+        1
+    );
+
+
+    if (soundEnabled) {
+
+        sounds.sauna.volume =
+            .10;
+
+    }
+
+    setTimeout(() => {
+
+        finalUI.classList.add(
+            "visible"
+        );
+
+    }, 250);
+
+ 
+    setTimeout(() => {
+
+        finalUI.classList.add(
+            "show-cta"
+        );
+
+    }, 750);
+
+}
+
+
+
+function openCTA() {
+
+    if (ctaOpened) return;
+
+    ctaOpened = true;
+
+    try {
+
+        window.open(
+            CTA_URL,
+            "_blank"
+        );
+
+    } catch (e) {
+
+        window.location.href =
+            CTA_URL;
+
+    }
+
+    setTimeout(() => {
+
+        if (
+            document.visibilityState ===
+            "visible"
+        ) {
+
+            try {
+
+                window.location.href =
+                    CTA_URL;
+
+            } catch (e) {}
+
+        }
+
+    }, 350);
+
+}
+
+
+girlAHit.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        selectGirl("a");
+
+    }
+);
+
+girlBHit.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        selectGirl("b");
+
+    }
+);
+
+bucketA.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        activateSteam();
+
+    }
+);
+
+bucketB.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        activateSteam();
+
+    }
+);
+
+ctaButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        openCTA();
+
+    }
+);
+
+soundButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        soundEnabled =
+            !soundEnabled;
+
+        if (soundEnabled) {
+
+            soundButton.textContent =
+                "🔊";
+
+            if (audioUnlocked) {
+
+                playSound(
+                    "sauna",
+                    .22
+                );
+
+            }
+
+        } else {
+
+            soundButton.textContent =
+                "🔇";
+
+            Object
+                .values(sounds)
+                .forEach(audio => {
+
+                    try {
+
+                        audio.pause();
+
+                    } catch (e) {}
+
+                });
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "pointerdown",
+    () => {
+
+        unlockAudio();
+
+    },
+    {
+        once: true
+    }
+);
+
+[
+    "assets/scene-1.webp",
+    "assets/scene-2-a.webp",
+    "assets/scene-2-b.webp",
+    "assets/scene-3-a.webp",
+    "assets/scene-3-b.webp",
+    "assets/steam-water.webp",
+    "assets/tap.webp",
+    "assets/text-choice.webp",
+    "assets/text-steam.webp",
+    "assets/text-final.webp",
+    "assets/btn-cta.webp"
+].forEach(src => {
+
+    const img =
+        new Image();
+
+    img.src = src;
+
+});
+
+[
+    "assets/audio/sauna.mp3",
+    "assets/audio/select.mp3",
+    "assets/audio/steam.mp3",
+    "assets/audio/reaction-a.mp3"
+].forEach(src => {
+
+    const audio =
+        new Audio();
+
+    audio.preload =
+        "auto";
+
+    audio.src =
+        src;
+
+});
+
+document.addEventListener(
+    "contextmenu",
+    event => {
+
+        event.preventDefault();
+
+    }
+);
+
+document.addEventListener(
+    "dragstart",
+    event => {
+
+        event.preventDefault();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
